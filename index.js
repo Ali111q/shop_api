@@ -1,5 +1,9 @@
 const express = require('express')
 const { User } = require('./model/user')
+const { Category } = require('./model/category')
+const { Product } = require('./model/products')
+const productRoutes = require("./routes/products"); // Adjust the path as needed
+
 const app = express()
 const bodyParser = require('body-parser');
 const cron = require('node-cron'); // Import the cron library
@@ -19,16 +23,16 @@ const users =    await User.destroy({ where: { verified:false } });
 
   });
 
-  app.use(
-    bodyParser.urlencoded({
-      extended: true,
-    })
-  );
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
+  app.use('/uploads', express.static('uploads'));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/country', countryRoutes);
 app.use('/api/city', cityRoutes);
 app.use("/api/banner", bannerRoutes);
+app.use("/api", productRoutes); // You can adjust the base path as needed
+
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const { Country, City } = require("./country");
 
 
-const User = sequelize.define("user", {
+const User = sequelize.define("user", { 
   name: {
     type: Sequelize.STRING,
     allowNull: false,
