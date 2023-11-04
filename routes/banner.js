@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const bannerController = require("../controller/banner");
-const upload = require("../middleware/upload");
+const {upload} = require("../middleware/upload");
+const authenticateToken = require("../middleware/auth");
 
 // Create a new banner with image upload
-router.post("/store", upload.single("image"),  bannerController.createBanner);
+router.post("/store", authenticateToken(['admin']),  upload.single("image"),  bannerController.createBanner);
 
 // Get all banners
 router.get("/", bannerController.getAllBanners);

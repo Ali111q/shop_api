@@ -1,11 +1,12 @@
 const { ProductCountryPrice, ProductImage, Product } = require("../model/products");
-const multer = require("multer");
-const upload = require("../middleware/upload"); // Import the Multer middleware
+const {upload} = require("../middleware/upload"); // Import the Multer middleware
 const fs = require("fs");
 const { responseHelper, errorHelper } = require("../helper/response_helper");
+const { Country } = require("../model/country");
 
 // Create a new product with images and country prices
 exports.createProduct = async (req, res) => {
+  console.log('#####################################');
   try {
     // Create the product
     const product = await Product.create({
@@ -17,32 +18,70 @@ exports.createProduct = async (req, res) => {
     // Create product images and associate them with the product
     const imageUrls = req.files.map((file) => `http://localhost:3000/${file.path}`);
     const productImages = await Promise.all(
-      imageUrls.map((imageUrl) => ProductImage.create({ imageUrl, ProductId: product.id }))
+      imageUrls.map((imageUrl) => ProductImage.create({ imageUrl, productId: product.id }))
     );
+    console.log('#######################', req.files, '#$##################');
 
     // Create product prices for different countries and associate them with the product
-    const countryPrices = req.body.prices.map((priceInfo) => ({
-      price: priceInfo.price,
-      countryId: priceInfo.countryId,
-      ProductId: product.id,
-    }));
-    await ProductCountryPrice.bulkCreate(countryPrices);
+      for (const priceInfo in req.body.prices) {
+        await ProductCountryPrice.create({
+          price: req.body.prices[priceInfo].price,
+          CountryId: req.body.prices[priceInfo].countryId,
+          productId: product.dataValues.id,
+        });
+      }
+    
+  //  await Promise.all(
+
+  //     req.body.prices.forEach(async (priceInfo) => {
+     
+  //     })
+  //   )
+
+
 
     return res.json(responseHelper(product, 'created'));
   } catch (error) {
+    console.log(error);
     return res.json(errorHelper(error));
   }
 };
-
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll({ include: [ProductImage, ProductCountryPrice] });
+    // Extract the country ID from the request query parameters, if provided
+    const countryId = req.query.countryId;
+
+    // Define options for the query
+    const options = {
+      include: [ProductImage],
+    };
+
+    // If a countryId is provided, include the associated Country with a filter
+    if (countryId) {
+      options.include.push({
+        model: Country,
+        through: {
+          where: { countryId: countryId },
+        },
+      });
+    }
+
+    // Fetch products based on the provided options
+    const products = await Product.findAll(options);
+
+    // Check if the result is an empty array when countryId is specified
+    if (countryId && products.length === 0) {
+      return res.status(200).json(responseHelper([], 'true'));
+    }
+
     res.status(200).json(responseHelper(products, 'true'));
   } catch (error) {
     console.error(error);
-    res.json({ error: "Failed to fetch products" });
+    res.json({ error: error });
   }
 };
+
+
 
 // Get a single product by ID
 exports.getProductById = async (req, res) => {

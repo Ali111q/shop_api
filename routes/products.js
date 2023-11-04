@@ -2,10 +2,11 @@
 const express = require("express");
 const router = express.Router();
 const productController = require("../controller/product_controller");
-const upload = require("../middleware/upload"); // Import the Multer middleware or any other file upload middleware
+const {upload, upload2} = require("../middleware/upload"); // Import the Multer middleware or any other file upload middleware
+const authenticateToken = require("../middleware/auth");
 
 // Create a new product with images and country prices
-router.post("/store", upload.array("images"), productController.createProduct);
+router.post("/store",authenticateToken(["admin"]), upload.array("images"), productController.createProduct);
 
 // Get all products
 router.get("/", productController.getAllProducts);

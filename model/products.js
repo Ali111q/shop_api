@@ -1,7 +1,8 @@
 const { Sequelize } = require("sequelize");
 const { sequelize } = require("../db/db");
-const { Country } = require("./country");
+const { Country, City } = require("./country");
 const { User } = require("./user");
+
 
 const Product = sequelize.define("product", {
   title: {
@@ -23,7 +24,12 @@ const Product = sequelize.define("product", {
 
 });
 
-const ProductCountryPrice = sequelize.define("ProductCountryPrice", {
+const ProductCityPrice = sequelize.define("ProductCityPrice", {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+},
   price: {
     type: Sequelize.FLOAT, // You may want to use the appropriate data type for prices
     allowNull: false,
@@ -31,39 +37,53 @@ const ProductCountryPrice = sequelize.define("ProductCountryPrice", {
 });
 
 const ProductImage = sequelize.define("ProductImage", {
-    imageUrl: {
-      type: Sequelize.STRING, // Adjust the data type as needed
-      allowNull: false,
-    },
-  });
-  const ProductRating = sequelize.define("ProductRating", {
-    rating: {
-      type: Sequelize.INTEGER, // You can use the appropriate data type for ratings
-      allowNull: false,
-    },
-  });
-  
-  // Define the associations between User, Product, and ProductRating
-  User.hasMany(ProductRating);
-  Product.hasMany(ProductRating);
-  ProductRating.belongsTo(User);
-  ProductRating.belongsTo(Product);
-  
-  // Define the association between Product and ProductImage
-  Product.hasMany(ProductImage);
-  ProductImage.belongsTo(Product);
-  
+  imageUrl: {
+    type: Sequelize.STRING, // Adjust the data type as needed
+    allowNull: false,
+  },
+});
+const ProductRating = sequelize.define("ProductRating", {
+  rating: {
+    type: Sequelize.INTEGER, // You can use the appropriate data type for ratings
+    allowNull: false,
+  },
+});
+const Category = sequelize.define("category", {
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+});
+const CategoryProduct = sequelize.define("category_products", {
+});
 
-  
+
+// Define the associations between User, Product, and ProductRating
+User.hasMany(ProductRating);
+Product.hasMany(ProductRating);
+
+ProductRating.belongsTo(User);
+ProductRating.belongsTo(Product);
+
+// Define the association between Product and ProductImage
+Product.hasMany(ProductImage);
+ProductImage.belongsTo(Product);
+
+
+
 // Define the associations
-Product.belongsToMany(Country, { through: ProductCountryPrice });
-Country.belongsToMany(Product, { through: ProductCountryPrice });
+Product.belongsToMany(City, { through: ProductCityPrice });
+City.belongsToMany(Product, { through: ProductCityPrice });
+Product.belongsToMany(Category, { through: CategoryProduct })
+Category.belongsToMany(Product, { through: CategoryProduct })
 
 // Sync the models
 sequelize.sync();
-Product.sync();
 
 
-module.exports.ProductCountryPrice = ProductCountryPrice;
+
+
+module.exports.ProductCityPrice = ProductCityPrice;
 module.exports.Product = Product;
-  module.exports.ProductImage = ProductImage;
+module.exports.ProductImage = ProductImage;
+module.exports.Category = Category;

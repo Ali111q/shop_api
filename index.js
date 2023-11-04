@@ -1,7 +1,6 @@
 const express = require('express')
 const { User } = require('./model/user')
-const { Category } = require('./model/category')
-const { Product } = require('./model/products')
+
 const productRoutes = require("./routes/products"); // Adjust the path as needed
 
 const app = express()
@@ -16,6 +15,8 @@ const authRoutes = require('./routes/auth')
 const countryRoutes = require('./routes/country')
 const cityRoutes = require('./routes/city')
 const bannerRoutes = require("./routes/banner");
+const category = require('./routes/category')
+const home = require('./routes/home')
 
 const scheduledJob = cron.schedule('*/2 * * * *', async () => {
     // Find and delete the user by ID
@@ -31,7 +32,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/country', countryRoutes);
 app.use('/api/city', cityRoutes);
 app.use("/api/banner", bannerRoutes);
-app.use("/api", productRoutes); // You can adjust the base path as needed
+app.use("/api/products", productRoutes); // You can adjust the base path as needed
+app.use("/api/category", category); // You can adjust the base path as needed
+app.use("/api/home", home); // You can adjust the base path as needed
 
 
 
