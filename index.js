@@ -10,7 +10,7 @@ const path = require("path");
 const formidable = require("express-formidable"); // Import express-formidable
 const fs = require("fs");
 
-const port = 3000
+const port = 30022
 const authRoutes = require('./routes/auth')
 const countryRoutes = require('./routes/country')
 const cityRoutes = require('./routes/city')
