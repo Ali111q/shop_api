@@ -1,8 +1,8 @@
-const { ProductCountryPrice, ProductImage, Product } = require("../model/products");
+const { ProductCountryPrice, ProductImage, Product, ProductCityPrice, CategoryProduct } = require("../model/products");
 const {upload} = require("../middleware/upload"); // Import the Multer middleware
 const fs = require("fs");
 const { responseHelper, errorHelper } = require("../helper/response_helper");
-const { Country } = require("../model/country");
+const { Country, City } = require("../model/country");
 
 // Create a new product with images and country prices
 exports.createProduct = async (req, res) => {
@@ -24,11 +24,18 @@ exports.createProduct = async (req, res) => {
 
     // Create product prices for different countries and associate them with the product
       for (const priceInfo in req.body.prices) {
-        await ProductCountryPrice.create({
+        
+        await ProductCityPrice.create({
           price: req.body.prices[priceInfo].price,
-          CountryId: req.body.prices[priceInfo].countryId,
+          CityId: req.body.prices[priceInfo].countryId,
           productId: product.dataValues.id,
         });
+      }
+      if (req.body.categoryId) {
+        await CategoryProduct.create({
+          productId:product.dataValues.id,
+          categoryId:req.body.categoryId
+        })
       }
     
   //  await Promise.all(
@@ -59,7 +66,7 @@ exports.getAllProducts = async (req, res) => {
     // If a countryId is provided, include the associated Country with a filter
     if (countryId) {
       options.include.push({
-        model: Country,
+        model: City,
         through: {
           where: { countryId: countryId },
         },

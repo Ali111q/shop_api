@@ -47,7 +47,6 @@ async function verifyNumber(req, res) {
       const token = jwt.sign(
         { id: user.id, phone: user.phone },
         "your_secret_key",
-        { expiresIn: "1h" }
       );
       return res.json(responseHelper({...user.dataValues, token:token}));
     }
@@ -80,7 +79,6 @@ async function login(req, res) {
     const token = jwt.sign(
       { id: user.id, phone: user.phone },
       "your_secret_key",
-      { expiresIn: "1h" }
     );
 
     res.json(responseHelper({ ...user.dataValues, token }, "تم تسجيل الدخول"));
@@ -121,7 +119,6 @@ async function recovery(req, res){
       const token = jwt.sign(
         { id: user.id, phone: user.phone },
         "your_secret_key",
-        { expiresIn: "1h" }
         );
         return res.json(responseHelper({...user.dataValues, token:token}));
       }

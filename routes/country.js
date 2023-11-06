@@ -4,7 +4,7 @@ const authenticateToken = require('../middleware/auth');
 const router = express.Router();
 
 // Create a new country
-router.post('/store', authenticateToken(['admin']), createCountry);
+router.post('/store', createCountry);
 
 // Get all countries
 router.get('/', getAllCountries);

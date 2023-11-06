@@ -1,5 +1,5 @@
 const { errorHelper, responseHelper } = require("../helper/response_helper");
-const { Country } = require("../model/country");
+const { Country, City } = require("../model/country");
 const { Category, ProductImage, Product } = require("../model/products"); // Replace with the correct path to your model file
 
 
@@ -17,54 +17,62 @@ exports.getAllCategories =async (req, res)=>{
         res.status(500).json(errorHelper(error));
       }
 }
-
 exports.getAllProducts = async (req, res) => {
-    try {
-        const catId = req.params.categoryId;
-      // Extract the country ID from the request, assuming it's available in req.query or req.params
-      const countryId = req.user.country_id; // Update this based on how the country ID is provided in your request
-  
-      // Define an options object to specify thse included models conditionally
-      const options = {
-        include: [ProductImage],
-      };
-  
-      // If countryId is provided, include ProductCountryPrice with a filter
-      if (countryId) {
-        options.include.push({
-          model: Country,
-          through: { where: { countryId } },
-        });
-      }
-  
-      if (catId) {
-        options.include.push({
-          model: Category,
-          through: { where: { categoryId:catId } },
-        });
-      }
-  
-      // Fetch products based on the provided options
-      const products = await Product.findAll(options);
-     
-      // Restructure the data to move "price" to the top level
-      const modifiedProducts = products.map((product) => {
-        console.log(product);
-        const modifiedProduct = {
-          id: product.id,
-          title: product.title,
-          video: product.video,
-          disc: product.disc,
-          sub_title: product.sub_title,
-          price: countryId ? product.Countries[0].ProductCountryPrice.price : null,
-          ProductImages: product.ProductImages.map(e=>e.imageUrl),
-        };
-        return modifiedProduct;
+  try {
+    const catId = req.params.categoryId;
+    const countryId = req.user.city_id;
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not specified
+    const limit = parseInt(req.query.limit) || 10; // Default to limit 10 if not specified
+
+    const options = {
+      include: [ProductImage],
+      offset: (page - 1) * limit, // Calculate the offset based on the page
+      limit: limit, // Set the limit based on the limit parameter
+    };
+
+    if (countryId) {
+      options.include.push({
+        model: City,
+        through: { where: { countryId } },
       });
-  
-      res.status(200).json(responseHelper(modifiedProducts, 'true'));
-    } catch (error) {
-      console.error(error);
-      res.json({ error: error });
     }
-  };
+
+    if (catId) {
+      options.include.push({
+        model: Category,
+        through: { where: { categoryId: catId } },
+      });
+    }
+
+    const products = await Product.findAndCountAll(options); // Use findAndCountAll to get the total count
+
+    const totalProducts = products.count;
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    const modifiedProducts = products.rows.map((product) => {
+      const modifiedProduct = {
+        id: product.id,
+        title: product.title,
+        video: product.video,
+        disc: product.disc,
+        sub_title: product.sub_title,
+        price: countryId ? product.Countries[0].ProductCountryPrice.price : null,
+        ProductImages: product.ProductImages.map(e => e.imageUrl),
+      };
+      return modifiedProduct;
+    });
+
+    res.status(200).json(
+      responseHelper({
+        products: modifiedProducts,
+        totalProducts,
+        totalPages,
+        currentPage: page,
+      },
+      'true'
+    ));
+  } catch (error) {
+    console.error(error);
+    res.json(errorHelper(error.message));
+  }
+};

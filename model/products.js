@@ -58,6 +58,24 @@ const CategoryProduct = sequelize.define("category_products", {
 });
 
 
+const Order = sequelize.define("Order", {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+},
+desc:{
+type:Sequelize.STRING
+}
+});
+
+// const ProductsOrders = sequelize.define("products_orders",{
+//   id: {
+//     type: Sequelize.INTEGER,
+//     autoIncrement: true,
+//     primaryKey: true
+// },
+// })
 // Define the associations between User, Product, and ProductRating
 User.hasMany(ProductRating);
 Product.hasMany(ProductRating);
@@ -76,7 +94,8 @@ Product.belongsToMany(City, { through: ProductCityPrice });
 City.belongsToMany(Product, { through: ProductCityPrice });
 Product.belongsToMany(Category, { through: CategoryProduct })
 Category.belongsToMany(Product, { through: CategoryProduct })
-
+Order.hasMany(ProductCityPrice);
+Order.belongsTo(User);
 // Sync the models
 sequelize.sync();
 
@@ -87,3 +106,4 @@ module.exports.ProductCityPrice = ProductCityPrice;
 module.exports.Product = Product;
 module.exports.ProductImage = ProductImage;
 module.exports.Category = Category;
+module.exports.CategoryProduct = CategoryProduct;
