@@ -50,7 +50,7 @@ const User = sequelize.define("user", {
     validate: {
       len: {
         args: [6],
-        min: 6,
+        min: 6,   
         msg: "الكود يجب أن يتكون من 6 أحرف على الأقل",
       },
     },

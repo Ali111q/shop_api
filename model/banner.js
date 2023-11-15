@@ -10,6 +10,10 @@ const Banner = sequelize.define("banner", {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    desc: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     image: {
       type: Sequelize.STRING,
       allowNull: false,

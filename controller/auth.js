@@ -9,6 +9,11 @@ const e = require("express");
 async function register(req, res) {
   try {
     const { name, password, phone, country_id, city_id, disc, lat, lng } = req.body;
+    const country = await Country.findByPk(country_id)
+    if (!country) {
+         return res.status(200).json(errorHelper('country id not available'));
+
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({

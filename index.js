@@ -16,14 +16,16 @@ const countryRoutes = require('./routes/country')
 const cityRoutes = require('./routes/city')
 const bannerRoutes = require("./routes/banner");
 const category = require('./routes/category')
-const home = require('./routes/home')
+const home = require('./routes/home');
+const user = require('./routes/user');
+var cors = require("cors"); 
 
 const scheduledJob = cron.schedule('*/2 * * * *', async () => {
     // Find and delete the user by ID
 const users =    await User.destroy({ where: { verified:false } });
 
   });
-
+  app.use(cors()); 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.use('/uploads', express.static('uploads'));
@@ -35,6 +37,7 @@ app.use("/api/banner", bannerRoutes);
 app.use("/api/products", productRoutes); // You can adjust the base path as needed
 app.use("/api/category", category); // You can adjust the base path as needed
 app.use("/api/home", home); // You can adjust the base path as needed
+app.use('/api/user', user);
 
 
 
