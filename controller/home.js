@@ -1,3 +1,4 @@
+const { getMostSoldProducts } = require("../helper/most_sale");
 const { errorHelper, responseHelper } = require("../helper/response_helper");
 const { Country, City } = require("../model/country");
 const { Category, ProductImage, Product } = require("../model/products"); // Replace with the correct path to your model file
@@ -76,3 +77,15 @@ exports.getAllProducts = async (req, res) => {
     res.json(errorHelper(error.message));
   }
 };
+exports.getMostSale =async (req, res)=>{
+  try {
+    
+  const pro = await  getMostSoldProducts();
+  res.status(200).json( responseHelper(pro,
+  'true'
+));
+  } catch (error) {
+    res.json(errorHelper(error));
+    
+  }
+}
