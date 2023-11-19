@@ -13,7 +13,7 @@ const Country = sequelize.define("Country",{
         allowNull:false
     },
     key:{
-        type : Sequelize.STRING ,
+        type : Sequelize.STRING,
         allowNull : true
     }
 })

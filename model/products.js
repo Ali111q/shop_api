@@ -21,7 +21,10 @@ const Product = sequelize.define("product", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-
+count:{
+  type:Sequelize.INTEGER, 
+  defaultValue:1
+}
 });
 
 const ProductCityPrice = sequelize.define("ProductCityPrice", {
@@ -53,6 +56,9 @@ const Category = sequelize.define("category", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  priority:{
+    type:Sequelize.INTEGER,
+  }
 });
 const CategoryProduct = sequelize.define("category_products", {
 });
@@ -93,7 +99,7 @@ ProductImage.belongsTo(Product);
 
 
 // Define the associations
-Product.belongsToMany(City, { through: ProductCityPrice });
+Product.belongsToMany(City, { through: ProductCityPrice, as:'prices' });
 City.belongsToMany(Product, { through: ProductCityPrice });
 Product.belongsToMany(Category, { through: CategoryProduct })
 Category.belongsToMany(Product, { through: CategoryProduct })

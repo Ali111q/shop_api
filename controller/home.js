@@ -2,7 +2,7 @@ const { createOrderFunction } = require("../helper/create_order");
 const { getMostSoldProducts } = require("../helper/most_sale");
 const { errorHelper, responseHelper } = require("../helper/response_helper");
 const { Country, City } = require("../model/country");
-const { Category, ProductImage, Product } = require("../model/products"); // Replace with the correct path to your model file
+const { Category, ProductImage, Product, ProductCityPrice } = require("../model/products"); // Replace with the correct path to your model file
 
 
 exports.getAllCategories =async (req, res)=>{
@@ -35,7 +35,7 @@ exports.getAllProducts = async (req, res) => {
     if (countryId) {
       options.include.push({
         model: City,
-        through: { where: { countryId } },
+        through: { where: { CityId:countryId } },
       });
     }
 
@@ -95,7 +95,20 @@ exports.createOrder = async (req, res)=>{
   try {
     
     const {items, disc} = req.body;
-    const order = await createOrderFunction({userId: req.user.id,items:items, disc:disc, cityId:user.city_id });
+    var pros = [];
+    for (const item in items) {
+    const product = await Product.getByPk(item, {
+      include:{
+        model: ProductCityPrice,
+        as:'prices',
+        where:{
+          CityId: req.user.city_id
+        }
+      }
+    });
+    pros.push(product.dataValues.prices[0].id)
+    }
+    const order = await createOrderFunction({userId: req.user.id,items:pros, disc:disc, cityId:user.city_id });
     req.json(responseHelper(order, "success"))
   } catch (error) {
     res.json(errorHelper(error))
