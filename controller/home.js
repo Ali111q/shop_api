@@ -1,3 +1,4 @@
+const { createOrderFunction } = require("../helper/create_order");
 const { getMostSoldProducts } = require("../helper/most_sale");
 const { errorHelper, responseHelper } = require("../helper/response_helper");
 const { Country, City } = require("../model/country");
@@ -87,5 +88,16 @@ exports.getMostSale =async (req, res)=>{
   } catch (error) {
     res.json(errorHelper(error));
     
+  }
+}
+
+exports.createOrder = async (req, res)=>{
+  try {
+    
+    const {items, disc} = req.body;
+    const order = await createOrderFunction({userId: req.user.id,items:items, disc:disc, cityId:user.city_id });
+    req.json(responseHelper(order, "success"))
+  } catch (error) {
+    res.json(errorHelper(error))
   }
 }

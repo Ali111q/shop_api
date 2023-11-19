@@ -64,6 +64,9 @@ const Order = sequelize.define("Order", {
     autoIncrement: true,
     primaryKey: true
 },
+state: {
+  type:Sequelize.STRING
+},
 desc:{
 type:Sequelize.STRING
 }
@@ -94,8 +97,9 @@ Product.belongsToMany(City, { through: ProductCityPrice });
 City.belongsToMany(Product, { through: ProductCityPrice });
 Product.belongsToMany(Category, { through: CategoryProduct })
 Category.belongsToMany(Product, { through: CategoryProduct })
-Order.hasMany(ProductCityPrice);
+Order.belongsToMany(ProductCityPrice, {through:'orderProductCirtyPrices'});
 Order.belongsTo(User);
+Order.belongsTo(User,{as:'driver', foreignKey:"driverId"})
 // Sync the models
 sequelize.sync();
 
@@ -107,3 +111,4 @@ module.exports.Product = Product;
 module.exports.ProductImage = ProductImage;
 module.exports.Category = Category;
 module.exports.CategoryProduct = CategoryProduct;
+module.exports.Order = Order;
