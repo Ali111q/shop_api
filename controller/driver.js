@@ -15,8 +15,6 @@ async function getOrders(req, res){
 }
 
 async function getOrderById(req, res){
-    const orders = await Order.get({
-        driverId:req.id
-    })
+    const orders = await Order.getByPk(req.params.id)
     // to do: return data
 }
