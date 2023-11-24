@@ -10,5 +10,5 @@ async function deleteOrder(req, res){
             id: req.body.id
         }
     })
-    //return data
+    //to do: return data
 }
