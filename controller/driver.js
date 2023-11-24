@@ -6,6 +6,10 @@ async function acceptOrder(req, res){
         // to do: update state value
     })
 }
+async function deliveredOrder(req, res){
+    const order = await Order.getByPk(req.body.id);
+    // to do update order state and user points
+}
 
 async function getOrders(req, res){
     const orders = await Order.get({
