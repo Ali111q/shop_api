@@ -5,4 +5,6 @@ const {acceptOrder, getOrderById, getOrders, deliveredOrders} = require("..contr
 router.post("/accept", acceptOrder);
 router.get("/orders", getOrders);
 router.post("/done", deliveredOrders);
-router.get("/order", getOrderById)
+router.get("/order/:id", getOrderById);
+
+module.exports = router;
