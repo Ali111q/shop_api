@@ -28,3 +28,7 @@ async function getOrderById(req, res){
     const order = await Order.findByPk(req.params.id)
     res.json(order)
 }
+
+module.exports = {
+    acceptOrder, deliveredOrder, getOrders, getOrderById
+}
