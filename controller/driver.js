@@ -3,22 +3,28 @@ const { Order } = require("../model/products");
 async function acceptOrder(req, res){
      const order = await Order.findByPk();
     order.update({
-        // to do: update state value
+        state:"accepted"
     })
+    res.json(order);
+    
 }
 async function deliveredOrder(req, res){
     const order = await Order.findByPk(req.body.id);
-    // to do update order state and user points
+    
+    order.update({
+        state: "done"
+    })
+    res.json(order);
 }
 
 async function getOrders(req, res){
     const orders = await Order.findAll({
         driverId:req.user.id
     })
-    // to do: return data
+    res.json(orders);
 }
 
 async function getOrderById(req, res){
-    const orders = await Order.findByPk(req.params.id)
-    // to do: return data
+    const order = await Order.findByPk(req.params.id)
+    res.json(order)
 }
