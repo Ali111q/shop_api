@@ -60,6 +60,10 @@ const User = sequelize.define("user", {
     allowNull: true,
     defaultValue: false,
   },
+  points:{
+  type:Sequelize.INTEGER,
+  defaultValue:0
+  }
   rule: {
     type: Sequelize.STRING,
     allowNull: true,
