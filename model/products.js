@@ -106,6 +106,7 @@ Category.belongsToMany(Product, { through: CategoryProduct })
 Order.belongsToMany(ProductCityPrice, {through:'orderProductCirtyPrices'});
 Order.belongsTo(User);
 Order.belongsTo(User,{as:'driver', foreignKey:"driverId"})
+Order.belongsTo(User,{as:'share', foreignKey:"shareId"})
 // Sync the models
 sequelize.sync();
 
