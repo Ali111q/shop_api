@@ -18,6 +18,7 @@ const bannerRoutes = require("./routes/banner");
 const category = require('./routes/category')
 const home = require('./routes/home');
 const user = require('./routes/user');
+const driver = require('./routes/driver')
 var cors = require("cors"); 
 
 const scheduledJob = cron.schedule('*/2 * * * *', async () => {
@@ -38,6 +39,7 @@ app.use("/api/products", productRoutes); // You can adjust the base path as need
 app.use("/api/category", category); // You can adjust the base path as needed
 app.use("/api/home", home); // You can adjust the base path as needed
 app.use('/api/user', user);
+app.use('/api/driver', driver);
 
 
 
