@@ -6,3 +6,17 @@ async function acceptOrder(req, res){
         // to do: update state value
     })
 }
+
+async function getOrders(req, res){
+    const orders = await Order.get({
+        driverId:req.user.id
+    })
+    // to do: return data
+}
+
+async function getOrderById(req, res){
+    const orders = await Order.get({
+        driverId:req.id
+    })
+    // to do: return data
+}
