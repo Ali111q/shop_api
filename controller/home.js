@@ -27,17 +27,21 @@ exports.getAllProducts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10; // Default to limit 10 if not specified
 
     const options = {
-      include: [ProductImage],
+      include: [
+        {
+          model: ProductImage,
+        },
+        {
+          model: City,
+          as: 'prices',
+          
+              where: { id: countryId }, // Adjust the condition based on your actual column name
+          
+        },
+      ],
       offset: (page - 1) * limit, // Calculate the offset based on the page
       limit: limit, // Set the limit based on the limit parameter
     };
-
-    if (countryId) {
-      options.include.push({
-        model: City,
-        through: { where: { CityId:countryId } },
-      });
-    }
 
     if (catId) {
       options.include.push({
@@ -52,32 +56,36 @@ exports.getAllProducts = async (req, res) => {
     const totalPages = Math.ceil(totalProducts / limit);
 
     const modifiedProducts = products.rows.map((product) => {
+      
       const modifiedProduct = {
         id: product.id,
         title: product.title,
         video: product.video,
         disc: product.disc,
         sub_title: product.sub_title,
-        price: countryId ? product.Countries[0].ProductCountryPrice.price : null,
-        ProductImages: product.ProductImages.map(e => e.imageUrl),
+        price: countryId ? product.prices[0].ProductCityPrice.price : null,
+        ProductImages: product.ProductImages.map((e) => e.imageUrl),
       };
       return modifiedProduct;
     });
 
     res.status(200).json(
-      responseHelper({
-        products: modifiedProducts,
-        totalProducts,
-        totalPages,
-        currentPage: page,
-      },
-      'true'
-    ));
+      responseHelper(
+        {
+          products: modifiedProducts,
+          totalProducts,
+          totalPages,
+          currentPage: page,
+        },
+        'true'
+      )
+    );
   } catch (error) {
     console.error(error);
     res.json(errorHelper(error.message));
   }
 };
+
 exports.getMostSale =async (req, res)=>{
   try {
     
@@ -92,25 +100,36 @@ exports.getMostSale =async (req, res)=>{
 }
 
 exports.createOrder = async (req, res)=>{
+
   try {
     
-    const {items, disc} = req.body;
+    
+    const {items, desc, shareId} = req.body;
     var pros = [];
+    price = 0;
     for (const item in items) {
-    const product = await Product.getByPk(item, {
-      include:{
-        model: ProductCityPrice,
-        as:'prices',
-        where:{
-          CityId: req.user.city_id
+      console.log(items[item]);
+      Product.findByPk(items[item].id, {
+        include:{
+          model: City,
+          as:'prices',
+          where:{
+            id: req.user.city_id
+          }
         }
-      }
-    });
-    pros.push(product.dataValues.prices[0].id)
+      }).then(e=>{
+        
+        // pros.push(item.prices)
+        pros.push({id:e?.dataValues.prices[0].ProductCityPrice.id, count:items[item].count});
+        price += e?.dataValues.prices[0].ProductCityPrice.price;
+      });
     }
-    const order = await createOrderFunction({userId: req.user.id,items:pros, disc:disc, cityId:user.city_id });
-    req.json(responseHelper(order, "success"))
+    const order = await createOrderFunction({userId: req.user.id,items:pros, desc:desc, cityId:req.user.city_id, shareId:shareId??null });
+    res.json(responseHelper({...order.dataValues, total_price:price}, "success"))
   } catch (error) {
-    res.json(errorHelper(error))
+    res.json(errorHelper(error));
+
   }
+
+
 }

@@ -63,7 +63,13 @@ const Category = sequelize.define("category", {
 const CategoryProduct = sequelize.define("category_products", {
 });
 
-
+const OrderProductCityPrice = sequelize.define('OrderProductCityPrice', {
+  count: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 1, // Set a default value if needed
+  },
+});
 const Order = sequelize.define("Order", {
   id: {
     type: Sequelize.INTEGER,
@@ -103,7 +109,7 @@ Product.belongsToMany(City, { through: ProductCityPrice, as:'prices' });
 City.belongsToMany(Product, { through: ProductCityPrice });
 Product.belongsToMany(Category, { through: CategoryProduct })
 Category.belongsToMany(Product, { through: CategoryProduct })
-Order.belongsToMany(ProductCityPrice, {through:'orderProductCirtyPrices'});
+Order.belongsToMany(ProductCityPrice, {through:OrderProductCityPrice, as:"proPrice"});
 Order.belongsTo(User);
 Order.belongsTo(User,{as:'driver', foreignKey:"driverId"})
 Order.belongsTo(User,{as:'share', foreignKey:"shareId"})

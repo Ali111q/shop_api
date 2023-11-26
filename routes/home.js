@@ -8,6 +8,6 @@ router.get("/banner", bannerController.getAllBanners);
 router.get("/categories",getAllCategories );
 router.get("/products", authenticateToken(['user', 'admin']), getAllProducts );
 router.get("/most-sale", getMostSale );
-router.get("/create_order",authenticateToken(['user']), createOrder );
+router.post("/create_order",authenticateToken(['user']), createOrder );
 
 module.exports = router;

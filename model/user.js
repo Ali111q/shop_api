@@ -63,7 +63,7 @@ const User = sequelize.define("user", {
   points:{
   type:Sequelize.INTEGER,
   defaultValue:0
-  }
+  },
   rule: {
     type: Sequelize.STRING,
     allowNull: true,
