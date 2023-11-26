@@ -16,9 +16,9 @@ router.get('/drivers', userController.getAllDrivers);
 router.get('/get-by-id/:id', userController.getUserById);
 
 // Update user by ID
-router.put('/update/:id', userController.updateUser);
+router.post('/update/:id', userController.updateUser);
 
 // Delete user by ID
-router.delete('/delete/:id', userController.deleteUser);
+router.post('/delete/:id', userController.deleteUser);
 
 module.exports = router;

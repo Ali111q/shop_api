@@ -6,20 +6,41 @@ const { Country, City } = require("../model/country");
 
 // Create a new product with images and country prices
 exports.createProduct = async (req, res) => {
-  console.log('#####################################');
+  const video = req.files.video;
+  const image = req.files.video;
+
+  // Save the uploaded file to the desired location
+  video.mv('uploads/videos/' + video.name, function (err) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+   
+  });
+  image.mv('uploads/images/' + image.name, function (err) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+   
+  });
+
   try {
     // Create the product
     const product = await Product.create({
       title: req.body.title,
       disc: req.body.disc,
       sub_title: req.body.sub_title,
+      video:`http://localhost:3022/uploads/videos/${video.name}`
     });
 
     // Create product images and associate them with the product
-    const imageUrls = req.files.map((file) => `http://localhost:3000/${file.path}`);
-    const productImages = await Promise.all(
-      imageUrls.map((imageUrl) => ProductImage.create({ imageUrl, productId: product.id }))
-    );
+    // const imageUrls = req.files.map((file) => `http://localhost:3022/${file.path}`);
+    // const productImages = await Promise.all(
+    //   imageUrls.map((imageUrl) => ProductImage.create({ imageUrl, productId: product.id }))
+    // );
+
+    ProductImage.create({ imageUrl:`http://localhost:3022/uploads/images/${image.name}`, productId: product.id })
     console.log('#######################', req.files, '#$##################');
 
     // Create product prices for different countries and associate them with the product
@@ -29,6 +50,7 @@ exports.createProduct = async (req, res) => {
           price: req.body.prices[priceInfo].price,
           CityId: req.body.prices[priceInfo].countryId,
           productId: product.dataValues.id,
+          
         });
       }
       if (req.body.categoryId) {

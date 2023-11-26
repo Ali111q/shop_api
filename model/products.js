@@ -21,10 +21,14 @@ const Product = sequelize.define("product", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-count:{
-  type:Sequelize.INTEGER, 
-  defaultValue:1
-}
+  points: {
+    type: Sequelize.INTEGER,
+    defaultValue: 1
+  },
+  available:{
+    type:Sequelize.INTEGER,
+    defaultValue:0
+  }
 });
 
 const ProductCityPrice = sequelize.define("ProductCityPrice", {
@@ -32,7 +36,7 @@ const ProductCityPrice = sequelize.define("ProductCityPrice", {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true
-},
+  },
   price: {
     type: Sequelize.FLOAT, // You may want to use the appropriate data type for prices
     allowNull: false,
@@ -56,8 +60,8 @@ const Category = sequelize.define("category", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  priority:{
-    type:Sequelize.INTEGER,
+  priority: {
+    type: Sequelize.INTEGER,
   }
 });
 const CategoryProduct = sequelize.define("category_products", {
@@ -75,13 +79,13 @@ const Order = sequelize.define("Order", {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true
-},
-state: {
-  type:Sequelize.STRING
-},
-desc:{
-type:Sequelize.STRING
-}
+  },
+  state: {
+    type: Sequelize.STRING
+  },
+  desc: {
+    type: Sequelize.STRING
+  }
 });
 
 // const ProductsOrders = sequelize.define("products_orders",{
@@ -105,14 +109,14 @@ ProductImage.belongsTo(Product);
 
 
 // Define the associations
-Product.belongsToMany(City, { through: ProductCityPrice, as:'prices' });
+Product.belongsToMany(City, { through: ProductCityPrice, as: 'prices' });
 City.belongsToMany(Product, { through: ProductCityPrice });
 Product.belongsToMany(Category, { through: CategoryProduct })
 Category.belongsToMany(Product, { through: CategoryProduct })
-Order.belongsToMany(ProductCityPrice, {through:OrderProductCityPrice, as:"proPrice"});
+Order.belongsToMany(ProductCityPrice, { through: OrderProductCityPrice, as: "proPrice" });
 Order.belongsTo(User);
-Order.belongsTo(User,{as:'driver', foreignKey:"driverId"})
-Order.belongsTo(User,{as:'share', foreignKey:"shareId"})
+Order.belongsTo(User, { as: 'driver', foreignKey: "driverId" })
+Order.belongsTo(User, { as: 'share', foreignKey: "shareId" })
 // Sync the models
 sequelize.sync();
 

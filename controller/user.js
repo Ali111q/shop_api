@@ -1,5 +1,6 @@
 const { errorHelper, responseHelper } = require("../helper/response_helper");
 const { User, Invitation } = require("../model/user");
+const bcrypt = require("bcryptjs");
 
 async function createAdmin(req, res) {
     try {
@@ -42,10 +43,12 @@ async function getAllAdmins(req, res) {
 async function createDriver(req, res) {
     try {
         const { name, phone, password, lat, lng, market_code } = req.body;
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
         const user = await User.create({
             name: name,
             phone: phone,
-            password: password,
+            password: hashedPassword,
             code: '111111',
             lat: lat,
             lng: lng,
@@ -124,6 +127,7 @@ async function updateUser(req, res) {
 
 async function deleteUser(req, res) {
     try {
+        console.log(req.params);
         const { id } = req.params;
         const user = await User.findByPk(id);
 

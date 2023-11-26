@@ -36,6 +36,26 @@ async function deliveredOrder(req, res){
         res.json(errorHelper(error))
     }
 }
+async function rejectOrder(req, res){
+    try {
+        
+        const order = await Order.findByPk(req.body.id);
+        
+        order.update({
+            state: "rejected"
+        })
+        const user = await User.findByPk(order.userId);
+
+        user.update({
+          points: user.points+10
+        })
+        res.json(responseHelper(order, "rejected"));
+    } catch (error) {
+        res.json(errorHelper(error))
+    }
+}
+
+
 async function getOrders(req, res) {
     const items = [];
     try {
@@ -96,5 +116,5 @@ async function getOrderById(req, res){
 }
 
 module.exports = {
-    acceptOrder, deliveredOrder, getOrders, getOrderById
+    acceptOrder, deliveredOrder, getOrders, getOrderById, rejectOrder
 }

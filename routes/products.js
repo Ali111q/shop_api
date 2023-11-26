@@ -6,7 +6,7 @@ const {upload, upload2} = require("../middleware/upload"); // Import the Multer 
 const authenticateToken = require("../middleware/auth");
 
 // Create a new product with images and country prices
-router.post("/store",authenticateToken(["admin"]), upload.array("images"), productController.createProduct);
+router.post("/store",authenticateToken(["admin"]), productController.createProduct);
 
 // Get all products
 router.get("/", productController.getAllProducts);
