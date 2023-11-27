@@ -1,5 +1,5 @@
-const { ProductCountryPrice, ProductImage, Product, ProductCityPrice, CategoryProduct } = require("../model/products");
-const {upload} = require("../middleware/upload"); // Import the Multer middleware
+const { ProductCountryPrice, ProductImage, Product, ProductCityPrice, CategoryProduct, Category } = require("../model/products");
+const { upload } = require("../middleware/upload"); // Import the Multer middleware
 const fs = require("fs");
 const { responseHelper, errorHelper } = require("../helper/response_helper");
 const { Country, City } = require("../model/country");
@@ -10,20 +10,25 @@ exports.createProduct = async (req, res) => {
   const image = req.files.video;
 
   // Save the uploaded file to the desired location
-  video.mv('uploads/videos/' + video.name, function (err) {
-    if (err) {
-      return res.status(500).send(err);
-    }
+  if (video) {
+    video.mv('uploads/videos/' + video.name, function (err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
 
-   
-  });
-  image.mv('uploads/images/' + image.name, function (err) {
-    if (err) {
-      return res.status(500).send(err);
-    }
 
-   
-  });
+    });
+  }
+  if (image) {
+
+    image.mv('uploads/images/' + image.name, function (err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+
+
+    });
+  }
 
   try {
     // Create the product
@@ -31,7 +36,7 @@ exports.createProduct = async (req, res) => {
       title: req.body.title,
       disc: req.body.disc,
       sub_title: req.body.sub_title,
-      video:`http://localhost:3022/uploads/videos/${video.name}`
+      video: video && `http://localhost:3022/uploads/videos/${video.name}`
     });
 
     // Create product images and associate them with the product
@@ -39,33 +44,26 @@ exports.createProduct = async (req, res) => {
     // const productImages = await Promise.all(
     //   imageUrls.map((imageUrl) => ProductImage.create({ imageUrl, productId: product.id }))
     // );
+    if (image) {
 
-    ProductImage.create({ imageUrl:`http://localhost:3022/uploads/images/${image.name}`, productId: product.id })
-    console.log('#######################', req.files, '#$##################');
+      ProductImage.create({ imageUrl: `http://localhost:3022/uploads/images/${image.name}`, productId: product.id })
+    }
+
 
     // Create product prices for different countries and associate them with the product
-      for (const priceInfo in req.body.prices) {
-        
-        await ProductCityPrice.create({
-          price: req.body.prices[priceInfo].price,
-          CityId: req.body.prices[priceInfo].countryId,
-          productId: product.dataValues.id,
-          
-        });
-      }
-      if (req.body.categoryId) {
-        await CategoryProduct.create({
-          productId:product.dataValues.id,
-          categoryId:req.body.categoryId
-        })
-      }
-    
-  //  await Promise.all(
-
-  //     req.body.prices.forEach(async (priceInfo) => {
-     
-  //     })
-  //   )
+    for (const priceInfo in req.body.prices) {
+      await ProductCityPrice.create({
+        price: req.body.prices[priceInfo].price,
+        CityId: req.body.prices[priceInfo].countryId,
+        productId: product.dataValues.id,
+      });
+    }
+    if (req.body.categoryId) {
+      await CategoryProduct.create({
+        productId: product.dataValues.id,
+        categoryId: req.body.categoryId
+      })
+    }
 
 
 
@@ -78,25 +76,42 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     // Extract the country ID from the request query parameters, if provided
-    const countryId = req.query.countryId;
-
+    const countryId = req.query.cityId;
+    const categoryId = req.query.categoryId;
     // Define options for the query
     const options = {
-      include: [ProductImage],
+      include: [{
+        
+        model: ProductImage, 
+        attributes:["imageUrl"]
+      }],
     };
 
     // If a countryId is provided, include the associated Country with a filter
-    if (countryId) {
+ 
       options.include.push({
+        as:"prices",
         model: City,
-        through: {
-          where: { countryId: countryId },
-        },
+     
       });
-    }
+    
+ 
+      options.include.push({
+        model: Category,
+        as:"category"
+   
+      });
+    
+const where = {}
 
+if (countryId) {
+  where["$prices.ProductCityPrice.id$"] =countryId;
+}
+if (categoryId) {
+  where["$category.id$"] =categoryId;
+}
     // Fetch products based on the provided options
-    const products = await Product.findAll(options);
+    const products = await Product.findAll({...options, where:where});
 
     // Check if the result is an empty array when countryId is specified
     if (countryId && products.length === 0) {

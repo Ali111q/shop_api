@@ -111,8 +111,8 @@ ProductImage.belongsTo(Product);
 // Define the associations
 Product.belongsToMany(City, { through: ProductCityPrice, as: 'prices' });
 City.belongsToMany(Product, { through: ProductCityPrice });
-Product.belongsToMany(Category, { through: CategoryProduct })
-Category.belongsToMany(Product, { through: CategoryProduct })
+Product.belongsToMany(Category, { through: CategoryProduct, as:"category" })
+Category.belongsToMany(Product, { through: CategoryProduct, as:"category" })
 Order.belongsToMany(ProductCityPrice, { through: OrderProductCityPrice, as: "proPrice" });
 Order.belongsTo(User);
 Order.belongsTo(User, { as: 'driver', foreignKey: "driverId" })

@@ -7,8 +7,6 @@ const productRoutes = require("./routes/products"); // Adjust the path as needed
 const app = express()
 const bodyParser = require('body-parser');
 const cron = require('node-cron'); // Import the cron library
-const path = require("path");
-const formidable = require("express-formidable"); // Import express-formidable
 const fs = require("fs");
 
 const port = 3022
@@ -20,6 +18,8 @@ const category = require('./routes/category')
 const home = require('./routes/home');
 const user = require('./routes/user');
 const driver = require('./routes/driver')
+const settings = require('./routes/settings')
+const order = require('./routes/order')
 var cors = require("cors");
 const { Op } = require('sequelize');
 const fileUpload = require('express-fileupload');
@@ -55,18 +55,8 @@ app.use("/api/category", category); // You can adjust the base path as needed
 app.use("/api/home", home); // You can adjust the base path as needed
 app.use('/api/user', user);
 app.use('/api/driver', driver);
+app.use('/api/settings', settings);
+app.use('/api/order', order);
 
-app.post('/upload', function (req, res) {
-  const video = req.files.video;
-
-  // Save the uploaded file to the desired location
-  video.mv('uploads/videos/' + video.name, function (err) {
-    if (err) {
-      return res.status(500).send(err);
-    }
-
-    res.send('File uploaded successfully!');
-  });
-});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

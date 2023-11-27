@@ -20,5 +20,7 @@ router.post('/update/:id', userController.updateUser);
 
 // Delete user by ID
 router.post('/delete/:id', userController.deleteUser);
+router.get('/count', userController.usersCount);
+router.get('/driver/count', userController.driversCount);
 
 module.exports = router;

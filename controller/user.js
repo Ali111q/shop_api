@@ -75,7 +75,7 @@ async function getAllDrivers(req, res) {
 
         res
             .status(200)
-            .json(responseHelper(users, "All admins retrieved successfully"));
+            .json(responseHelper(users, "All drivers retrieved successfully"));
     } catch (error) {
         res.status(500).json(errorHelper(error));
     }
@@ -143,6 +143,30 @@ async function deleteUser(req, res) {
     }
 }
 
+async function usersCount(req, res) {
+    try {
+        const usersCount = await User.count({
+            where: {
+                rule: "user"
+            }
+        });
+        res.json(responseHelper(usersCount, "users count"));
+    } catch (error) {
+        res.json(errorHelper(error));
+    }
+}
+async function driversCount(req, res) {
+    try {
+        const usersCount = await User.count({
+            where: {
+                rule: "driver"
+            }
+        });
+        res.json(responseHelper(usersCount, "driver count"));
+    } catch (error) {
+        res.json(errorHelper(error));
+    }
+}
 module.exports = {
     createAdmin,
     getAllAdmins,
@@ -151,4 +175,6 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
+    usersCount,
+    driversCount
 };
